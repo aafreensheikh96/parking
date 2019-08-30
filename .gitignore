@@ -1,0 +1,8 @@
+# external packages folder
+vendor/
+
+# vendor backups by dep
+vendor.orig
+_vendor-*
+.vendor-new
+/playground
