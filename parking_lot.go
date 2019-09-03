@@ -1,11 +1,15 @@
 package parking
 
-import "errors"
+import (
+	"errors"
+)
 
 type ParkingLotService interface {
 	Park(regNo, colour string) (*Slot, error)
 	Leave(regNo string) (*Slot, error)
 	LeaveByPosition(position int) (*Slot, error)
+	FindByRegistrationNumber(numberPlate string) (*Slot, error)
+	FindAllByColor(colour string) ([]*Slot, error)
 }
 
 type ParkingLot struct {
@@ -100,20 +104,16 @@ func (p *ParkingLot) FindByRegistrationNumber(numberPlate string) (*Slot, error)
 }
 
 func (p *ParkingLot) FindAllByColor(colour string) ([]*Slot, error) {
+	slotsList := []*Slot{}
 	if p.Slots == nil {
 		return nil, errors.New(NoCarsParked)
 	}
 
-	slots, err := p.Slots.FindColor(colour)
-	if err != nil {
-		return nil, err
-	}
-
+	slots, _ := p.Slots.FindColor(colour)
 	if len(slots) == 0 {
 		return nil, errors.New(CarWithColorNotFound)
 	}
 
-	slotsList := []*Slot{}
 	for i := range slots {
 		slotsList = append(slotsList, slots[i])
 	}

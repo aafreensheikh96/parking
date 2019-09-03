@@ -1,6 +1,8 @@
 package parking
 
-import "errors"
+import (
+	"errors"
+)
 
 type Slot struct {
 	Car      *Car
@@ -78,22 +80,22 @@ func (s *Slot) FindPosition(position int) (*Slot, error) {
 }
 
 func (s *Slot) FindColor(colour string) ([]*Slot, error) {
+
 	if s.Car.Colour == colour {
 		if s.NextSlot == nil {
 			return []*Slot{
 				s,
 			}, nil
 		}
-
 		slots, err := s.NextSlot.FindColor(colour)
 		if err == nil {
 			slots = append([]*Slot{s}, slots...)
 		}
-		return slots, err
+		return slots, nil
 	}
 
 	if s.NextSlot == nil {
-		return nil, errors.New(CarNotFound)
+		return nil, nil
 	}
 
 	return s.NextSlot.FindColor(colour)

@@ -11,16 +11,7 @@ const (
 	CarRegNoWithdColour Input = "registration_numbers_for_cars_with_colour"
 	SlotWithColour      Input = "slot_numbers_for_cars_with_colour"
 	SlotWithRegNo       Input = "slot_number_for_registration_number"
-)
-
-// Output is a typecast of string for Output for commands
-type Output string
-
-const (
-	ParkingCreated Input = "Created a parking lot with %d slots"
-	AllocatedSlot  Input = "Allocated slot number: %s"
-	FreeSlot       Input = "Slot number %s is free"
-	StatusHeader   Input = "Slot No. \t Registration No \t Colour"
+	NotFisrt            Input = "create_parking_lot_again"
 )
 
 const (

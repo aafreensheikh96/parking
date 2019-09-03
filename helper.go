@@ -1,6 +1,7 @@
 package parking
 
 import (
+	"errors"
 	"strconv"
 	"strings"
 )
@@ -20,14 +21,21 @@ func parseCommand(command string) []string {
 }
 
 // processCommand process each command
-func processCommand(p *Parking, command []string) (*Resp, error) {
+func processCommand(p *Parking, command []string, first bool) (*Resp, error) {
+	if len(command) == 0 {
+		return nil, errors.New("Invalid input")
+	}
 	switch Input(command[0]) {
 	case CreateParking:
+		if !first {
+			return &Resp{command: NotFisrt}, nil
+		}
 		maxSlots, err := strconv.Atoi(command[1])
 		if err != nil {
 			panic(err.Error())
 		}
 		pl := NewParkingLot(maxSlots)
+		p.parkingLot = pl
 		return NewResponse(pl), nil
 	case Park:
 		return p.Park(command[1], command[2])
@@ -40,13 +48,12 @@ func processCommand(p *Parking, command []string) (*Resp, error) {
 		}
 		return p.LeaveByPosition(slotPosition)
 	case CarRegNoWithdColour:
-		return p.FindAllByColor(command[1])
+		return p.FindAllByColor(command[1], CarRegNoWithdColour)
 	case SlotWithColour:
-		return p.FindAllByColor(command[1])
+		return p.FindAllByColor(command[1], SlotWithColour)
 	case SlotWithRegNo:
 		return p.FindByRegistrationNumber(command[1])
 	default:
+		return nil, errors.New("Invalid input")
 	}
-
-	return &Resp{}, nil
 }
