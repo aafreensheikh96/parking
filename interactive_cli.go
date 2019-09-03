@@ -2,8 +2,10 @@ package parking
 
 import (
 	"bufio"
+	"errors"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -18,15 +20,35 @@ func ExecuteFile(filename string) error {
 
 	reader := bufio.NewReader(file)
 
-	// var line string
+	var line string
+	var firstline = true
 	for {
-		_, err = reader.ReadString('\n')
+		line, err = reader.ReadString('\n')
 		if err != nil {
 			return err
+		}
+		command := parseCommand(line)
+		if firstline {
+			firstline = false
+			if Input(command[0]) != CreateParking {
+				return errors.New("First command has to be create parking")
+			}
+			maxSlots, err := strconv.Atoi(command[1])
+			if err != nil {
+				return err
+			}
+			p := NewParking(maxSlots)
+			resp, err := processCommand(p, command)
+			if err != nil {
+				return err
+			}
+			log.Println(resp)
 		}
 	}
 	return nil
 }
 
 // ExecuteCLIruns a CLI to execute commands.
-func ExecuteCLI() {}
+func ExecuteCLI() {
+
+}

@@ -99,6 +99,22 @@ func (s *Slot) FindColor(colour string) ([]*Slot, error) {
 	return s.NextSlot.FindColor(colour)
 }
 
+func (s *Slot) RegistrationNumber() string {
+	if s.Car == nil {
+		return ""
+	}
+
+	return s.Car.RegNo
+}
+
+func (s *Slot) Color() string {
+	if s.Car == nil {
+		return ""
+	}
+
+	return s.Car.Colour
+}
+
 func (s *Slot) ListSelf() []*Slot {
 	if s.NextSlot == nil {
 		return []*Slot{s}

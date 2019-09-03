@@ -13,6 +13,12 @@ type ParkingLot struct {
 	Slots   *Slot
 }
 
+func NewParkingLot(maxSlots int) *ParkingLot {
+	return &ParkingLot{
+		MaxSlot: maxSlots,
+	}
+}
+
 func (p *ParkingLot) occupancy() int {
 	var count int
 	var s = p.Slots
@@ -83,6 +89,14 @@ func (p *ParkingLot) LeaveByPosition(position int) (*Slot, error) {
 	}
 
 	return slotFound, nil
+}
+
+func (p *ParkingLot) FindByRegistrationNumber(numberPlate string) (*Slot, error) {
+	if p.Slots == nil {
+		return nil, errors.New(NoCarsParked)
+	}
+
+	return p.Slots.FindCar(numberPlate)
 }
 
 func (p *ParkingLot) FindAllByColor(colour string) ([]*Slot, error) {
