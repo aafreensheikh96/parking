@@ -1,11 +1,10 @@
 ## Parking
 It is a virtual parking system.
 
-```
 shell
 #setup the dependency
-$ ./setup.sh
+$ ./bin/setup.sh
 
 #running the tool
-$ ./parking.sh 
-```
+$ ./bin/parking.sh 
+
