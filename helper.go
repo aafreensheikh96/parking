@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+// parseCommand parses the input commands
 func parseCommand(command string) []string {
 	parsedCommand := []string{}
 
@@ -21,14 +22,14 @@ func parseCommand(command string) []string {
 }
 
 // processCommand process each command
-func processCommand(p *Parking, command []string, first bool) (*Resp, error) {
+func processCommand(p *parking, command []string, first bool) (*resp, error) {
 	if len(command) == 0 {
 		return nil, errors.New("Invalid input")
 	}
 	switch Input(command[0]) {
 	case CreateParking:
 		if !first {
-			return &Resp{command: NotFisrt}, nil
+			return &resp{command: NotFisrt}, nil
 		}
 		maxSlots, err := strconv.Atoi(command[1])
 		if err != nil {

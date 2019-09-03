@@ -4,123 +4,135 @@ import (
 	"errors"
 )
 
-type Slot struct {
-	Car      *Car
-	SlotNo   int
-	PrevSlot *Slot
-	NextSlot *Slot
+type slot struct {
+	car      *car
+	slotNo   int
+	prevSlot *slot
+	nextSlot *slot
 }
 
-func NewSlot(car *Car, slotNo int) *Slot {
-	return &Slot{
-		Car:    car,
-		SlotNo: slotNo,
+// NewSlot creates a slor for a car with specific regNo and colour
+func NewSlot(car *car, slotNo int) *slot {
+	return &slot{
+		car:    car,
+		slotNo: slotNo,
 	}
 }
 
-func (s *Slot) Position() int {
-	return s.SlotNo
+// Position returns the slot no of a slot
+func (s *slot) Position() int {
+	return s.slotNo
 }
 
-func (s *Slot) AddNext(cs *Slot) error {
-	if s.NextSlot == nil {
-		s.NextSlot = cs.UpdatePosition(s.SlotNo + 1)
-		cs.PrevSlot = s
+// AddNext adds a slot next to the current slot
+// in the parking lot if it is not completely occupied
+func (s *slot) AddNext(cs *slot) error {
+	if s.nextSlot == nil {
+		s.nextSlot = cs.UpdatePosition(s.slotNo + 1)
+		cs.prevSlot = s
 		return nil
 	}
 
-	if s.NextSlot.SlotNo > (s.SlotNo + 1) {
-		currentNext := s.NextSlot
-		s.NextSlot = cs.UpdatePosition(s.SlotNo + 1)
-		cs.PrevSlot = s
-		cs.NextSlot = currentNext
-		currentNext.PrevSlot = cs
+	if s.nextSlot.slotNo > (s.slotNo + 1) {
+		currentNext := s.nextSlot
+		s.nextSlot = cs.UpdatePosition(s.slotNo + 1)
+		cs.prevSlot = s
+		cs.nextSlot = currentNext
+		currentNext.prevSlot = cs
 		return nil
 	}
 
-	s.NextSlot.AddNext(cs)
+	s.nextSlot.AddNext(cs)
 
 	return nil
 }
 
-func (s *Slot) UpdatePosition(position int) *Slot {
-	s.SlotNo = position
+// UpdatePosition updates the position of a slot
+func (s *slot) UpdatePosition(position int) *slot {
+	s.slotNo = position
 	return s
 }
 
-func (s *Slot) FindCar(regNo string) (*Slot, error) {
-	if s.Car.RegNo == regNo {
+// FindCar, finds a slot of a car with specific regNo
+func (s *slot) FindCar(regNo string) (*slot, error) {
+	if s.car.RegNo == regNo {
 		return s, nil
 	}
 
-	if s.NextSlot == nil {
+	if s.nextSlot == nil {
 		return nil, errors.New(CarNotFound)
 	}
 
-	return s.NextSlot.FindCar(regNo)
+	return s.nextSlot.FindCar(regNo)
 }
 
-func (s *Slot) Leave() error {
-	if s.PrevSlot != nil {
-		s.PrevSlot.NextSlot = s.NextSlot
+// Leave deallocates a slot
+func (s *slot) Leave() error {
+	if s.prevSlot != nil {
+		s.prevSlot.nextSlot = s.nextSlot
 	}
 	return nil
 }
 
-func (s *Slot) FindPosition(position int) (*Slot, error) {
-	if s.SlotNo == position {
+// FindPosition finds a slot with specific position
+func (s *slot) FindPosition(position int) (*slot, error) {
+	if s.slotNo == position {
 		return s, nil
 	}
 
-	if s.NextSlot == nil {
+	if s.nextSlot == nil {
 		return nil, errors.New(CarNotFound)
 	}
 
-	return s.NextSlot.FindPosition(position)
+	return s.nextSlot.FindPosition(position)
 }
 
-func (s *Slot) FindColor(colour string) ([]*Slot, error) {
+// FindColour finds a car with specific colour
+func (s *slot) FindColour(colour string) ([]*slot, error) {
 
-	if s.Car.Colour == colour {
-		if s.NextSlot == nil {
-			return []*Slot{
+	if s.car.Colour == colour {
+		if s.nextSlot == nil {
+			return []*slot{
 				s,
 			}, nil
 		}
-		slots, err := s.NextSlot.FindColor(colour)
+		slots, err := s.nextSlot.FindColour(colour)
 		if err == nil {
-			slots = append([]*Slot{s}, slots...)
+			slots = append([]*slot{s}, slots...)
 		}
 		return slots, nil
 	}
 
-	if s.NextSlot == nil {
+	if s.nextSlot == nil {
 		return nil, nil
 	}
 
-	return s.NextSlot.FindColor(colour)
+	return s.nextSlot.FindColour(colour)
 }
 
-func (s *Slot) RegistrationNumber() string {
-	if s.Car == nil {
+// RegistrationNumber returns the regNo of a car at the slot
+func (s *slot) RegistrationNumber() string {
+	if s.car == nil {
 		return ""
 	}
 
-	return s.Car.RegNo
+	return s.car.RegNo
 }
 
-func (s *Slot) Color() string {
-	if s.Car == nil {
+// Colour returns the Colour of a car at the slot
+func (s *slot) Colour() string {
+	if s.car == nil {
 		return ""
 	}
 
-	return s.Car.Colour
+	return s.car.Colour
 }
 
-func (s *Slot) ListSelf() []*Slot {
-	if s.NextSlot == nil {
-		return []*Slot{s}
+// ListSelf lists the slot if it is not nil
+func (s *slot) ListSelf() []*slot {
+	if s.nextSlot == nil {
+		return []*slot{s}
 	}
 
-	return append([]*Slot{s}, s.NextSlot.ListSelf()...)
+	return append([]*slot{s}, s.nextSlot.ListSelf()...)
 }

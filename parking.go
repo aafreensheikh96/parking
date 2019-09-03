@@ -1,64 +1,69 @@
 package parking
 
-type Parking struct {
-	parkingLot *ParkingLot
+// struct that hold the parking lot.
+type parking struct {
+	parkingLot *parkingLot
 }
 
-func NewParking(maxSlots int) *Parking {
+// NewParking creates new parking area which stores the parking lot
+func NewParking(maxSlots int) *parking {
 	pl := NewParkingLot(maxSlots)
-	return &Parking{
+	return &parking{
 		pl,
 	}
 }
 
-func (p *Parking) Park(numberPlate, color string) (*Resp, error) {
-	slot, err := p.parkingLot.Park(numberPlate, color)
-	sResponse := &Resp{
-		slots: []*Slot{
-			slot,
+// Park is a wrapper over the `parkingLot.Park`
+func (p *parking) Park(numberPlate, color string) (*resp, error) {
+	s, err := p.parkingLot.Park(numberPlate, color)
+	r := &resp{
+		slots: []*slot{
+			s,
 		},
 		command: Park,
 	}
 
-	return sResponse, err
+	return r, err
 }
 
-func (p *Parking) LeaveByPosition(position int) (*Resp, error) {
-	slot, err := p.parkingLot.LeaveByPosition(position)
-	sResponse := &Resp{
-		slots: []*Slot{
-			slot,
+// LeaveByPosition is a wrapper over the `parkingLot.LeaveByPosition`
+func (p *parking) LeaveByPosition(position int) (*resp, error) {
+	s, err := p.parkingLot.LeaveByPosition(position)
+	r := &resp{
+		slots: []*slot{
+			s,
 		},
 		command: Leave,
 	}
 
-	return sResponse, err
+	return r, err
 }
 
-func (p *Parking) FindByRegistrationNumber(numberPlate string) (*Resp, error) {
-	slot, err := p.parkingLot.FindByRegistrationNumber(numberPlate)
-	sResponse := &Resp{
-		slots: []*Slot{
-			slot,
-		},
+// FindByRegistrationNumber is a wrapper over the `parkingLot.FindByRegistrationNumber`
+func (p *parking) FindByRegistrationNumber(numberPlate string) (*resp, error) {
+	s, err := p.parkingLot.FindByRegistrationNumber(numberPlate)
+	r := &resp{
+		slots:   []*slot{s},
 		command: SlotWithRegNo,
 	}
 
-	return sResponse, err
+	return r, err
 }
 
-func (p *Parking) FindAllByColor(color string, command Input) (*Resp, error) {
+// FindAllByColor is a wrapper over the `parkingLot.FindAllByColor`
+func (p *parking) FindAllByColor(color string, command Input) (*resp, error) {
 	slots, err := p.parkingLot.FindAllByColor(color)
-	sResponse := &Resp{
+	r := &resp{
 		slots:   slots,
 		command: command,
 	}
-	return sResponse, err
+	return r, err
 }
 
-func (p *Parking) All() (*Resp, error) {
+// All is a wrapper over the `parkingLot.AllSlots`
+func (p *parking) All() (*resp, error) {
 	slots, err := p.parkingLot.AllSlots()
-	return &Resp{
+	return &resp{
 		slots:   slots,
 		command: Status,
 	}, err

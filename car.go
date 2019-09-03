@@ -1,12 +1,14 @@
 package parking
 
-type Car struct {
+// stores the struct of the car
+type car struct {
 	RegNo  string
 	Colour string
 }
 
-func NewCar(regNo, colour string) *Car {
-	return &Car{
+// NewCar returns a new car onject
+func NewCar(regNo, colour string) *car {
+	return &car{
 		RegNo:  regNo,
 		Colour: colour,
 	}

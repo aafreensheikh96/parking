@@ -5,36 +5,40 @@ import (
 )
 
 type ParkingLotService interface {
-	Park(regNo, colour string) (*Slot, error)
-	Leave(regNo string) (*Slot, error)
-	LeaveByPosition(position int) (*Slot, error)
-	FindByRegistrationNumber(numberPlate string) (*Slot, error)
-	FindAllByColor(colour string) ([]*Slot, error)
+	Park(regNo, colour string) (*slot, error)
+	Leave(regNo string) (*slot, error)
+	LeaveByPosition(position int) (*slot, error)
+	FindByRegistrationNumber(numberPlate string) (*slot, error)
+	FindAllByColor(colour string) ([]*slot, error)
 }
 
-type ParkingLot struct {
-	MaxSlot int
-	Slots   *Slot
+// parkingLot stores the slots for a parking lot and the max slots available in it
+type parkingLot struct {
+	maxSlot int
+	slots   *slot
 }
 
-func NewParkingLot(maxSlots int) *ParkingLot {
-	return &ParkingLot{
-		MaxSlot: maxSlots,
+// NewParkingLot creates new parking lot with the a specific number of slots
+func NewParkingLot(maxSlots int) *parkingLot {
+	return &parkingLot{
+		maxSlot: maxSlots,
 	}
 }
 
-func (p *ParkingLot) occupancy() int {
+// occupancy returns the number of slots occupied
+func (p *parkingLot) occupancy() int {
 	var count int
-	var s = p.Slots
+	var s = p.slots
 	for s != nil {
 		count++
-		s = s.NextSlot
+		s = s.nextSlot
 	}
 	return count
 }
 
-func (p *ParkingLot) Park(regNo, colour string) (*Slot, error) {
-	if p.occupancy() == p.MaxSlot {
+// Park, parks a car into the next avaliable slot.
+func (p *parkingLot) Park(regNo, colour string) (*slot, error) {
+	if p.occupancy() == p.maxSlot {
 		return nil, errors.New(MaxSlotReached)
 	}
 
@@ -42,74 +46,78 @@ func (p *ParkingLot) Park(regNo, colour string) (*Slot, error) {
 
 	if p.occupancy() == 0 {
 		slot := NewSlot(car, 1)
-		p.Slots = slot
+		p.slots = slot
 		return slot, nil
 	}
 
-	if p.Slots.Position() > 1 {
-		currSlot := p.Slots
-		p.Slots = NewSlot(car, 1)
-		p.Slots.AddNext(currSlot)
-		currSlot.PrevSlot = p.Slots
+	if p.slots.Position() > 1 {
+		currSlot := p.slots
+		p.slots = NewSlot(car, 1)
+		p.slots.AddNext(currSlot)
+		currSlot.prevSlot = p.slots
 	}
 
 	slot := NewSlot(car, 0)
-	p.Slots.AddNext(slot)
+	p.slots.AddNext(slot)
 
 	return slot, nil
 }
 
-func (p *ParkingLot) Leave(regNo string) (*Slot, error) {
-	if p.Slots == nil {
+// Leave deallocates a specific regNo car from its slot
+func (p *parkingLot) Leave(regNo string) (*slot, error) {
+	if p.slots == nil {
 		return nil, errors.New(NoCarsParked)
 	}
 
-	slotFound, err := p.Slots.FindCar(regNo)
+	slotFound, err := p.slots.FindCar(regNo)
 	if err != nil {
 		return nil, errors.New(CarNotFound)
 	}
 
 	slotFound.Leave()
-	if slotFound.PrevSlot == nil {
-		p.Slots = slotFound.NextSlot
+	if slotFound.prevSlot == nil {
+		p.slots = slotFound.nextSlot
 	}
 
 	return slotFound, nil
 }
 
-func (p *ParkingLot) LeaveByPosition(position int) (*Slot, error) {
-	if p.Slots == nil {
+// LeaveByPosition deallocates a car from the specific position if it is parked
+func (p *parkingLot) LeaveByPosition(position int) (*slot, error) {
+	if p.slots == nil {
 		return nil, errors.New(NoCarsParked)
 	}
 
-	slotFound, err := p.Slots.FindPosition(position)
+	slotFound, err := p.slots.FindPosition(position)
 	if err != nil {
 		return nil, errors.New(CarNotFound)
 	}
 
 	slotFound.Leave()
-	if slotFound.PrevSlot == nil {
-		p.Slots = slotFound.NextSlot
+	if slotFound.prevSlot == nil {
+		p.slots = slotFound.nextSlot
 	}
 
 	return slotFound, nil
 }
 
-func (p *ParkingLot) FindByRegistrationNumber(numberPlate string) (*Slot, error) {
-	if p.Slots == nil {
+// FindByRegistrationNumber finds a specific car with the RegNo
+func (p *parkingLot) FindByRegistrationNumber(numberPlate string) (*slot, error) {
+	if p.slots == nil {
 		return nil, errors.New(NoCarsParked)
 	}
 
-	return p.Slots.FindCar(numberPlate)
+	return p.slots.FindCar(numberPlate)
 }
 
-func (p *ParkingLot) FindAllByColor(colour string) ([]*Slot, error) {
-	slotsList := []*Slot{}
-	if p.Slots == nil {
+// FindAllByColor, finds all the cars with the particular colour
+func (p *parkingLot) FindAllByColor(colour string) ([]*slot, error) {
+	slotsList := []*slot{}
+	if p.slots == nil {
 		return nil, errors.New(NoCarsParked)
 	}
 
-	slots, _ := p.Slots.FindColor(colour)
+	slots, _ := p.slots.FindColour(colour)
 	if len(slots) == 0 {
 		return nil, errors.New(CarWithColorNotFound)
 	}
@@ -120,10 +128,11 @@ func (p *ParkingLot) FindAllByColor(colour string) ([]*Slot, error) {
 	return slotsList, nil
 }
 
-func (p *ParkingLot) AllSlots() ([]*Slot, error) {
-	if p.Slots == nil {
+// AllSlots returns the list of all occupied slots
+func (p *parkingLot) AllSlots() ([]*slot, error) {
+	if p.slots == nil {
 		return nil, errors.New(NoCarsParked)
 	}
 
-	return p.Slots.ListSelf(), nil
+	return p.slots.ListSelf(), nil
 }

@@ -20,5 +20,5 @@ const (
 	MaxSlotReached       = "Sorry, parking lot is full"
 	NoCarsParked         = "No cars parked"
 	CarNotFound          = "Not found"
-	CarWithColorNotFound = "Car with specified colour not found"
+	CarWithColorNotFound = "car with specified colour not found"
 )
