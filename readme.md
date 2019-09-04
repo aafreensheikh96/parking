@@ -1,7 +1,19 @@
 ## Parking
 It is a virtual parking system.
 
-shell
+##Prerequisites
+
+#install GO
+brew install go
+
+#install dep, dependency management tool
+brew install dep
+
+#copy the project into your $GOPATH
+cd $GOPATH
+git clone https://github.com/aafreensheikh96/parking.git
+
+##Setup
 #setup the dependency
 $ ./bin/setup.sh
 
