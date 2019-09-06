@@ -1,12 +1,14 @@
-Parking
-It is a virtual parking system.
+##Parking
+It is a virtual parking system. this project can hold single parking lot.
 
-Prerequisites
+#Prerequisites
 
 install GO
 ```
 brew install go
 ```
+
+Refernce to setup your $GOPATH https://medium.com/@AkyunaAkish/setting-up-a-golang-development-environment-mac-os-x-d58e5a7ea24f
 
 install dep, dependency management tool
 ```
@@ -30,3 +32,7 @@ running the tool
 ./bin/parking.sh 
 ```
 
+running testfile 
+```
+./bin/testing.sh
+```
